@@ -41,7 +41,17 @@ def health():
 
 @app.get('/api/stats')
 def stats_api():
-    with db() as c:r=c.execute('SELECT COUNT(*) items,(SELECT COUNT(*) FROM market) priced,AVG(liquidity) avg_liquidity,MAX(updated_at) last_update FROM items LEFT JOIN market ON market.item_id=items.id').fetchone()
+    with db() as c:
+    r = c.execute('''
+        SELECT
+            COUNT(*) AS items,
+            (SELECT COUNT(*) FROM market) AS priced,
+            AVG(m.liquidity) AS avg_liquidity,
+            MAX(m.updated_at) AS last_update
+        FROM items i
+        LEFT JOIN market m
+            ON m.item_id = i.id
+    ''').fetchone()
     return dict(r)
 
 SORTS={'name':'i.name','min':'m.min_price','median':'m.median','roi':'CASE WHEN m.min_price>0 AND m.median IS NOT NULL THEN (m.median-m.min_price)/m.min_price ELSE NULL END','buy':'m.buy_max','sellers':'m.sellers','buyers':'m.buyers','liquidity':'m.liquidity','score':'m.score','updated':'m.updated_at'}
