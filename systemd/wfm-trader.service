@@ -1,0 +1,20 @@
+[Unit]
+Description=Warframe Market Trader API
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+User=wfm
+Group=wfm
+WorkingDirectory=/opt/wfm-trader
+EnvironmentFile=/opt/wfm-trader/.env
+ExecStart=/opt/wfm-trader/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/wfm-trader/data
+[Install]
+WantedBy=multi-user.target
